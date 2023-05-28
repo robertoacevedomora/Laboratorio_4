@@ -3,6 +3,35 @@
 #include <libopencm3/stm32/spi.h>
 #include <libopencm3/stm32/gpio.h>
 
+
+
+//Giroscopio
+#define GYR_RNW			(1 << 7) /* Write when zero */
+#define GYR_MNS			(1 << 6) /* Multiple reads when 1 */
+#define GYR_WHO_AM_I		0x0F
+#define GYR_OUT_TEMP		0x26
+#define GYR_STATUS_REG		0x27
+#define GYR_CTRL_REG1		0x20
+#define GYR_CTRL_REG1_PD	(1 << 3)
+#define GYR_CTRL_REG1_XEN	(1 << 1)
+#define GYR_CTRL_REG1_YEN	(1 << 0)
+#define GYR_CTRL_REG1_ZEN	(1 << 2)
+#define GYR_CTRL_REG1_BW_SHIFT	4
+#define GYR_CTRL_REG4		0x23
+#define GYR_CTRL_REG4_FS_SHIFT	4
+
+#define GYR_OUT_X_L		0x28
+#define GYR_OUT_X_H		0x29
+#define GYR_OUT_Y_L		0x2A
+#define GYR_OUT_Y_H		0x2B
+#define GYR_OUT_Z_L		0x2C
+#define GYR_OUT_Z_H		0x2D
+
+//Faltan agregar ejes y,z.
+
+
+
+
 //Funcion para configurar la comunicacion spi, en este caso hay que usar SPI5. 
 //Utilizamos GPIOA y GPIOE. GPIO3, GPI05, GPIO6,GPIO7.
 static void spi_setup(void)
@@ -147,28 +176,36 @@ struct Giroscopio read_giro(void)
 	ejes.x|=spi_read(SPI5) << 8;  //Desplazamiento y mascar or
 	gpio_set(GPIOE, GPIO3);
 
+    gpio_clear(GPIOE, GPIO3);
+	spi_send(SPI5, GYR_OUT_Y_L | GYR_RNW);
+	spi_read(SPI5);
+	spi_send(SPI5, 0);
+	ejes.x=spi_read(SPI5);    //En gyr_x se guarda el valor
+	gpio_set(GPIOE, GPIO3);
+
+	gpio_clear(GPIOE, GPIO3);
+	spi_send(SPI5, GYR_OUT_Y_H | GYR_RNW);
+	spi_read(SPI5);
+	spi_send(SPI5, 0);
+	ejes.x|=spi_read(SPI5) << 8;  //Desplazamiento y mascar or
+	gpio_set(GPIOE, GPIO3);
+
+    gpio_clear(GPIOE, GPIO3);
+	spi_send(SPI5, GYR_OUT_Z_L | GYR_RNW);
+	spi_read(SPI5);
+	spi_send(SPI5, 0);
+	ejes.x=spi_read(SPI5);    //En gyr_x se guarda el valor
+	gpio_set(GPIOE, GPIO3);
+
+	gpio_clear(GPIOE, GPIO3);
+	spi_send(SPI5, GYR_OUT_Z_H | GYR_RNW);
+	spi_read(SPI5);
+	spi_send(SPI5, 0);
+	ejes.x|=spi_read(SPI5) << 8;  //Desplazamiento y mascar or
+	gpio_set(GPIOE, GPIO3);
+
 }
 
-
-
-//Giroscopio
-#define GYR_RNW			(1 << 7) /* Write when zero */
-#define GYR_MNS			(1 << 6) /* Multiple reads when 1 */
-#define GYR_WHO_AM_I		0x0F
-#define GYR_OUT_TEMP		0x26
-#define GYR_STATUS_REG		0x27
-#define GYR_CTRL_REG1		0x20
-#define GYR_CTRL_REG1_PD	(1 << 3)
-#define GYR_CTRL_REG1_XEN	(1 << 1)
-#define GYR_CTRL_REG1_YEN	(1 << 0)
-#define GYR_CTRL_REG1_ZEN	(1 << 2)
-#define GYR_CTRL_REG1_BW_SHIFT	4
-#define GYR_CTRL_REG4		0x23
-#define GYR_CTRL_REG4_FS_SHIFT	4
-
-#define GYR_OUT_X_L		0x28
-#define GYR_OUT_X_H		0x29
-//Faltan agregar ejes y,z.
 
 int main(void)
 {
