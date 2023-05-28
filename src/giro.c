@@ -107,6 +107,48 @@ static void giro_setup(void)
 	gpio_set(GPIOE, GPIO3);    
 }
 
+//Funcion que lee y retorna el valor de los 3 ejes
+struct Giroscopio read_giro(void)
+{
+    struct Giroscopio ejes;
+
+    gpio_clear(GPIOE, GPIO3);
+	spi_send(SPI5, GYR_WHO_AM_I | GYR_RNW);
+	spi_read(SPI5);
+	spi_send(SPI5, 0);
+	spi_read(SPI5);
+	gpio_set(GPIOE, GPIO3);
+
+	gpio_clear(GPIOE, GPIO3);
+	spi_send(SPI5, GYR_STATUS_REG | GYR_RNW);
+	spi_read(SPI5);
+	spi_send(SPI5, 0);
+	spi_read(SPI5);
+	gpio_set(GPIOE, GPIO3);
+
+	gpio_clear(GPIOE, GPIO3);
+	spi_send(SPI5, GYR_OUT_TEMP | GYR_RNW);
+	spi_read(SPI5);
+	spi_send(SPI5, 0);
+	spi_read(SPI5);
+	gpio_set(GPIOE, GPIO3);
+
+	gpio_clear(GPIOE, GPIO3);
+	spi_send(SPI5, GYR_OUT_X_L | GYR_RNW);
+	spi_read(SPI5);
+	spi_send(SPI5, 0);
+	ejes.x=spi_read(SPI5);    //En gyr_x se guarda el valor
+	gpio_set(GPIOE, GPIO3);
+
+	gpio_clear(GPIOE, GPIO3);
+	spi_send(SPI5, GYR_OUT_X_H | GYR_RNW);
+	spi_read(SPI5);
+	spi_send(SPI5, 0);
+	ejes.x|=spi_read(SPI5) << 8;  //Desplazamiento y mascar or
+	gpio_set(GPIOE, GPIO3);
+
+}
+
 
 
 //Giroscopio
@@ -159,7 +201,7 @@ int main(void)
 //Esto permite lectura de registros y del eje x, hay que agregarle la parte alta del eje x y los ejes z y y.
 //Eliminamos los 8, cambiamos SPI1 por SPI5. Tambien segun la rutina de las diapositvas falta agregarle un read, que
 //en este caso aprece con un temp.		
-        gpio_clear(GPIOE, GPIO3);
+       /** gpio_clear(GPIOE, GPIO3);
 		spi_send(SPI1, GYR_WHO_AM_I | GYR_RNW);
 		spi_read(SPI1);
 		spi_send(SPI1, 0);
@@ -192,7 +234,7 @@ int main(void)
 		spi_read(SPI1);
 		spi_send(SPI1, 0);
 		gyr_x|=spi_read(SPI1) << 8;  //Desplazamiento y mascar or
-		gpio_set(GPIOE, GPIO3);
+		gpio_set(GPIOE, GPIO3); **/
 
 //Para el ciclo
 		int i;
