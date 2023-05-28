@@ -251,17 +251,49 @@ static uint16_t read_adc_naiive(uint8_t channel)
 	return reg16;
 }
 
+//Para ver los valores en la consola(spi.mems)
+int print_decimal(int);
 
+int print_decimal(int num)
+{
+	int		ndx = 0;
+	char	buf[10];
+	int		len = 0;
+	char	is_signed = 0;
+
+	if (num < 0) {
+		is_signed++;
+		num = 0 - num;
+	}
+	buf[ndx++] = '\000';
+	do {
+		buf[ndx++] = (num % 10) + '0';
+		num = num / 10;
+	} while (num != 0);
+	ndx--;
+	if (is_signed != 0) {
+		console_putc('-');
+		len++;
+	}
+	while (buf[ndx] != '\000') {
+		console_putc(buf[ndx--]);
+		len++;
+	}
+	return len; /* number of characters printed */
+}
 
 int main(void)
 {
 	//uint8_t temp;
 	//int16_t gyr_x; //Variable de 16 bits que guarda el valor de gyr_x. Hacer otras dos para y y z.
 	//Las dejamos porque se van a utilizar
+    read_giro eje;
     clock_setup();
 	gpio_setup();
 	usart_setup();
 	spi_setup();
+    giro_setup();
+    adc_setup();
     
     // Comandos configuracion para el giroscopio, queda mejor como una nueva funcion porque el main lleva mas cosas.
 	/**gpio_clear(GPIOE, GPIO3);
