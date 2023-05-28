@@ -8,6 +8,11 @@
 #include <libopencm3/stm32/usart.h>
 #include <libopencm3/stm32/spi.h>
 #include <libopencm3/stm32/gpio.h>
+#include "clock.h"
+#include "console.h"
+#include "sdram.h"
+#include "lcd-spi.h"
+#include "gfx.h"
 
 
 
@@ -66,12 +71,12 @@ static void spi_setup(void)
 	spi_set_clock_phase_0(SPI5);
 	spi_set_full_duplex_mode(SPI5);
 	spi_set_unidirectional_mode(SPI5); /* bidirectional but in 3-wire */
-	spi_set_data_size(SPI5, SPI_CR2_DS_8BIT);
+	//spi_set_data_size(SPI5, SPI_CR1_DS_8BIT);
 	spi_enable_software_slave_management(SPI5);
 	spi_send_msb_first(SPI5);
 	spi_set_nss_high(SPI5);
 	//spi_enable_ss_output(SPI1);
-	spi_fifo_reception_threshold_8bit(SPI5);
+	//spi_fifo_reception_threshold_8bit(SPI5);
 	SPI_I2SCFGR(SPI5) &= ~SPI_I2SCFGR_I2SMOD;
 	spi_enable(SPI5);
 }
@@ -118,10 +123,7 @@ static void gpio_setup(void)
 //Eliminamos de momento esta funcion, no hace falta (my_usart_print_int)
 
 //De momento dejamos clock_setup
-static void clock_setup(void)
-{
-	rcc_clock_setup_hsi(&rcc_hsi_configs[RCC_CLOCK_HSI_64MHZ]);
-}
+
 
 static void giro_setup(void)
 {
@@ -181,45 +183,45 @@ read_giro Giro_ejes(void)
 	spi_send(SPI5, GYR_OUT_X_L | GYR_RNW);
 	spi_read(SPI5);
 	spi_send(SPI5, 0);
-	eje.x=spi_read(SPI5);    //En gyr_x se guarda el valor
+	eje.gyr_x=spi_read(SPI5);    //En gyr_x se guarda el valor
 	gpio_set(GPIOE, GPIO3);
 
 	gpio_clear(GPIOE, GPIO3);
 	spi_send(SPI5, GYR_OUT_X_H | GYR_RNW);
 	spi_read(SPI5);
 	spi_send(SPI5, 0);
-	eje.x|=spi_read(SPI5) << 8;  //Desplazamiento y mascar or
+	eje.gyr_x|=spi_read(SPI5) << 8;  //Desplazamiento y mascar or
 	gpio_set(GPIOE, GPIO3);
 
     gpio_clear(GPIOE, GPIO3);
 	spi_send(SPI5, GYR_OUT_Y_L | GYR_RNW);
 	spi_read(SPI5);
 	spi_send(SPI5, 0);
-	eje.y=spi_read(SPI5);    //En gyr_x se guarda el valor
+	eje.gyr_y=spi_read(SPI5);    //En gyr_x se guarda el valor
 	gpio_set(GPIOE, GPIO3);
 
 	gpio_clear(GPIOE, GPIO3);
 	spi_send(SPI5, GYR_OUT_Y_H | GYR_RNW);
 	spi_read(SPI5);
 	spi_send(SPI5, 0);
-	eje.y|=spi_read(SPI5) << 8;  //Desplazamiento y mascar or
+	eje.gyr_y|=spi_read(SPI5) << 8;  //Desplazamiento y mascar or
 	gpio_set(GPIOE, GPIO3);
 
     gpio_clear(GPIOE, GPIO3);
 	spi_send(SPI5, GYR_OUT_Z_L | GYR_RNW);
 	spi_read(SPI5);
 	spi_send(SPI5, 0);
-	eje.z=spi_read(SPI5);    //En gyr_x se guarda el valor
+	eje.gyr_z=spi_read(SPI5);    //En gyr_x se guarda el valor
 	gpio_set(GPIOE, GPIO3);
 
 	gpio_clear(GPIOE, GPIO3);
 	spi_send(SPI5, GYR_OUT_Z_H | GYR_RNW);
 	spi_read(SPI5);
 	spi_send(SPI5, 0);
-	eje.z|=spi_read(SPI5) << 8;  //Desplazamiento y mascar or
+	eje.gyr_z|=spi_read(SPI5) << 8;  //Desplazamiento y mascar or
 	gpio_set(GPIOE, GPIO3);
 
-    return ejes;
+    return eje;
 
 }
 
@@ -288,7 +290,6 @@ int main(void)
 	//int16_t gyr_x; //Variable de 16 bits que guarda el valor de gyr_x. Hacer otras dos para y y z.
 	//Las dejamos porque se van a utilizar
     read_giro eje;
-    clock_setup();
 	gpio_setup();
 	usart_setup();
 	spi_setup();
