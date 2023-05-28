@@ -67,42 +67,22 @@ static void usart_setup(void)
 
 //Configurando el USART, puerto B pines 2 y 3.
 
+//Funcion para configurar pines como entradas y salidas. Elejimos el puerto D.
 static void gpio_setup(void)
 {
-	rcc_periph_clock_enable(RCC_GPIOE);
-	gpio_mode_setup(GPIOE, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE,
+	rcc_periph_clock_enable(RCC_GPIOD);
+	gpio_mode_setup(GPIOD, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE,
 		GPIO8 | GPIO9 | GPIO10 | GPIO11 | GPIO12 | GPIO13 |
 		GPIO14 | GPIO15);
+    gpio_mode_setup(GPIOD, GPIO_MODE_INPUT, GPIO_PUPD_NONE,
+		GPIO4 | GPIO5 ); //Para onexiones posteriores, pensando en USB, etc
 }
 
-static void my_usart_print_int(uint32_t usart, int32_t value)
-{
-	int8_t i;
-	int8_t nr_digits = 0;
-	char buffer[25];
 
-	if (value < 0) {
-		usart_send_blocking(usart, '-');
-		value = value * -1;
-	}
+//GPIO configurados
+//Eliminamos de momento esta funcion, no hace falta (my_usart_print_int)
 
-	if (value == 0) {
-		usart_send_blocking(usart, '0');
-	}
-
-	while (value > 0) {
-		buffer[nr_digits++] = "0123456789"[value % 10];
-		value /= 10;
-	}
-
-	for (i = nr_digits-1; i >= 0; i--) {
-		usart_send_blocking(usart, buffer[i]);
-	}
-
-	usart_send_blocking(usart, '\r');
-	usart_send_blocking(usart, '\n');
-}
-
+//De momento dejamos clock_setup
 static void clock_setup(void)
 {
 	rcc_clock_setup_hsi(&rcc_hsi_configs[RCC_CLOCK_HSI_64MHZ]);
@@ -131,11 +111,12 @@ int main(void)
 {
 	uint8_t temp;
 	int16_t gyr_x;
-	clock_setup();
+	//Las dejamos porque se van a utilizar
+    clock_setup();
 	gpio_setup();
 	usart_setup();
 	spi_setup();
-
+    //
 	gpio_clear(GPIOE, GPIO3);
 	spi_send8(SPI1, GYR_CTRL_REG1);
 	spi_read8(SPI1);
@@ -153,7 +134,7 @@ int main(void)
 	gpio_set(GPIOE, GPIO3);
 
 	while (1) {
-
+//Esto permite lectura de registros y del eje x, hay que agregarle la parte alta del eje x y los ejes z y y.
 		gpio_clear(GPIOE, GPIO3);
 		spi_send8(SPI1, GYR_WHO_AM_I | GYR_RNW);
 		spi_read8(SPI1);
