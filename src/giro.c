@@ -3,10 +3,11 @@
 #include <libopencm3/stm32/spi.h>
 #include <libopencm3/stm32/gpio.h>
 
-//Funcion para configurar la comunicacion spi, en este caso hay que usar SPI5.
+//Funcion para configurar la comunicacion spi, en este caso hay que usar SPI5. 
+//Utilizamos GPIOA y GPIOE. GPIO3, GPI05, GPIO6,GPIO7.
 static void spi_setup(void)
 {
-	rcc_periph_clock_enable(RCC_SPI1);
+	rcc_periph_clock_enable(RCC_SPI5);
 	/* For spi signal pins */
 	rcc_periph_clock_enable(RCC_GPIOA);
 	/* For spi mode select on the l3gd20 */
@@ -23,31 +24,34 @@ static void spi_setup(void)
 	gpio_set_af(GPIOA, GPIO_AF5, GPIO5 | GPIO6 | GPIO7);
 
 	//spi initialization;
-	spi_set_master_mode(SPI1);
-	spi_set_baudrate_prescaler(SPI1, SPI_CR1_BR_FPCLK_DIV_64);
-	spi_set_clock_polarity_0(SPI1);
-	spi_set_clock_phase_0(SPI1);
-	spi_set_full_duplex_mode(SPI1);
-	spi_set_unidirectional_mode(SPI1); /* bidirectional but in 3-wire */
-	spi_set_data_size(SPI1, SPI_CR2_DS_8BIT);
-	spi_enable_software_slave_management(SPI1);
-	spi_send_msb_first(SPI1);
-	spi_set_nss_high(SPI1);
+    //Comunicacion con el giroscopio.
+	spi_set_master_mode(SPI5);
+	spi_set_baudrate_prescaler(SPI5, SPI_CR1_BR_FPCLK_DIV_64);
+	spi_set_clock_polarity_0(SPI5);
+	spi_set_clock_phase_0(SPI5);
+	spi_set_full_duplex_mode(SPI5);
+	spi_set_unidirectional_mode(SPI5); /* bidirectional but in 3-wire */
+	spi_set_data_size(SPI5, SPI_CR2_DS_8BIT);
+	spi_enable_software_slave_management(SPI5);
+	spi_send_msb_first(SPI5);
+	spi_set_nss_high(SPI5);
 	//spi_enable_ss_output(SPI1);
-	spi_fifo_reception_threshold_8bit(SPI1);
-	SPI_I2SCFGR(SPI1) &= ~SPI_I2SCFGR_I2SMOD;
-	spi_enable(SPI1);
+	spi_fifo_reception_threshold_8bit(SPI5);
+	SPI_I2SCFGR(SPI5) &= ~SPI_I2SCFGR_I2SMOD;
+	spi_enable(SPI5);
 }
 
+//Hasta aqui todo bien
+//Cambiamos aqui el purto A por el B para no generar confuciones.
 static void usart_setup(void)
 {
 	/* Enable clocks for GPIO port A (for GPIO_USART2_TX) and USART2. */
 	rcc_periph_clock_enable(RCC_USART2);
-	rcc_periph_clock_enable(RCC_GPIOA);
+	rcc_periph_clock_enable(RCC_GPIOB);
 
 	/* Setup GPIO pin GPIO_USART2_TX/GPIO9 on GPIO port A for transmit. */
-	gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO2 | GPIO3);
-	gpio_set_af(GPIOA, GPIO_AF7, GPIO2| GPIO3);
+	gpio_mode_setup(GPIOB, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO2 | GPIO3);
+	gpio_set_af(GPIOB, GPIO_AF7, GPIO2| GPIO3);
 
 	/* Setup UART parameters. */
 	usart_set_baudrate(USART2, 115200);
@@ -60,6 +64,8 @@ static void usart_setup(void)
 	/* Finally enable the USART. */
 	usart_enable(USART2);
 }
+
+//Configurando el USART, puerto B pines 2 y 3.
 
 static void gpio_setup(void)
 {
