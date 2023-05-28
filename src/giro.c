@@ -88,6 +88,27 @@ static void clock_setup(void)
 	rcc_clock_setup_hsi(&rcc_hsi_configs[RCC_CLOCK_HSI_64MHZ]);
 }
 
+static void giro_setup(void)
+{
+    gpio_clear(GPIOE, GPIO3);
+	spi_send(SPI1, GYR_CTRL_REG1);
+	spi_read(SPI1);
+	spi_send(SPI1, GYR_CTRL_REG1_PD | GYR_CTRL_REG1_XEN |
+			GYR_CTRL_REG1_YEN | GYR_CTRL_REG1_ZEN |
+			(3 << GYR_CTRL_REG1_BW_SHIFT));
+	spi_read(SPI1);
+	gpio_set(GPIOE, GPIO3);
+
+	gpio_clear(GPIOE, GPIO3);
+	spi_send(SPI1, GYR_CTRL_REG4);
+	spi_read(SPI1);
+	spi_send(SPI1, (1 << GYR_CTRL_REG4_FS_SHIFT));
+	spi_read(SPI1);
+	gpio_set(GPIOE, GPIO3);    
+}
+
+
+
 //Giroscopio
 #define GYR_RNW			(1 << 7) /* Write when zero */
 #define GYR_MNS			(1 << 6) /* Multiple reads when 1 */
@@ -110,70 +131,70 @@ static void clock_setup(void)
 int main(void)
 {
 	uint8_t temp;
-	int16_t gyr_x;
+	int16_t gyr_x; //Variable de 16 bits que guarda el valor de gyr_x. Hacer otras dos para y y z.
 	//Las dejamos porque se van a utilizar
     clock_setup();
 	gpio_setup();
 	usart_setup();
 	spi_setup();
-    //
-	gpio_clear(GPIOE, GPIO3);
-	spi_send8(SPI1, GYR_CTRL_REG1);
-	spi_read8(SPI1);
-	spi_send8(SPI1, GYR_CTRL_REG1_PD | GYR_CTRL_REG1_XEN |
+    
+    // Comandos configuracion para el giroscopio, queda mejor como una nueva funcion porque el main lleva mas cosas.
+	/**gpio_clear(GPIOE, GPIO3);
+	spi_send(SPI1, GYR_CTRL_REG1);
+	spi_read(SPI1);
+	spi_send(SPI1, GYR_CTRL_REG1_PD | GYR_CTRL_REG1_XEN |
 			GYR_CTRL_REG1_YEN | GYR_CTRL_REG1_ZEN |
 			(3 << GYR_CTRL_REG1_BW_SHIFT));
-	spi_read8(SPI1);
+	spi_read(SPI1);
 	gpio_set(GPIOE, GPIO3);
 
 	gpio_clear(GPIOE, GPIO3);
-	spi_send8(SPI1, GYR_CTRL_REG4);
-	spi_read8(SPI1);
-	spi_send8(SPI1, (1 << GYR_CTRL_REG4_FS_SHIFT));
-	spi_read8(SPI1);
-	gpio_set(GPIOE, GPIO3);
+	spi_send(SPI1, GYR_CTRL_REG4);
+	spi_read(SPI1);
+	spi_send(SPI1, (1 << GYR_CTRL_REG4_FS_SHIFT));
+	spi_read(SPI1);
+	gpio_set(GPIOE, GPIO3);**/
 
 	while (1) {
 //Esto permite lectura de registros y del eje x, hay que agregarle la parte alta del eje x y los ejes z y y.
-		gpio_clear(GPIOE, GPIO3);
-		spi_send8(SPI1, GYR_WHO_AM_I | GYR_RNW);
-		spi_read8(SPI1);
-		spi_send8(SPI1, 0);
-		temp=spi_read8(SPI1);
-		my_usart_print_int(USART2, (temp));
+//Eliminamos los 8, cambiamos SPI1 por SPI5. Tambien segun la rutina de las diapositvas falta agregarle un read, que
+//en este caso aprece con un temp.		
+        gpio_clear(GPIOE, GPIO3);
+		spi_send(SPI1, GYR_WHO_AM_I | GYR_RNW);
+		spi_read(SPI1);
+		spi_send(SPI1, 0);
+		spi_read(SPI1);
 		gpio_set(GPIOE, GPIO3);
 
 		gpio_clear(GPIOE, GPIO3);
-		spi_send8(SPI1, GYR_STATUS_REG | GYR_RNW);
-		spi_read8(SPI1);
-		spi_send8(SPI1, 0);
-		temp=spi_read8(SPI1);
-		my_usart_print_int(USART2, (temp));
+		spi_send(SPI1, GYR_STATUS_REG | GYR_RNW);
+		spi_read(SPI1);
+		spi_send(SPI1, 0);
+		spi_read(SPI1);
 		gpio_set(GPIOE, GPIO3);
 
 		gpio_clear(GPIOE, GPIO3);
-		spi_send8(SPI1, GYR_OUT_TEMP | GYR_RNW);
-		spi_read8(SPI1);
-		spi_send8(SPI1, 0);
-		temp=spi_read8(SPI1);
-		my_usart_print_int(USART2, (temp));
+		spi_send(SPI1, GYR_OUT_TEMP | GYR_RNW);
+		spi_read(SPI1);
+		spi_send(SPI1, 0);
+		spi_read(SPI1);
 		gpio_set(GPIOE, GPIO3);
 
 		gpio_clear(GPIOE, GPIO3);
-		spi_send8(SPI1, GYR_OUT_X_L | GYR_RNW);
-		spi_read8(SPI1);
-		spi_send8(SPI1, 0);
-		gyr_x=spi_read8(SPI1);
+		spi_send(SPI1, GYR_OUT_X_L | GYR_RNW);
+		spi_read(SPI1);
+		spi_send(SPI1, 0);
+		gyr_x=spi_read(SPI1);    //En gyr_x se guarda el valor
 		gpio_set(GPIOE, GPIO3);
 
 		gpio_clear(GPIOE, GPIO3);
-		spi_send8(SPI1, GYR_OUT_X_H | GYR_RNW);
-		spi_read8(SPI1);
-		spi_send8(SPI1, 0);
-		gyr_x|=spi_read8(SPI1) << 8;
-		my_usart_print_int(USART2, (gyr_x));
+		spi_send(SPI1, GYR_OUT_X_H | GYR_RNW);
+		spi_read(SPI1);
+		spi_send(SPI1, 0);
+		gyr_x|=spi_read(SPI1) << 8;  //Desplazamiento y mascar or
 		gpio_set(GPIOE, GPIO3);
 
+//Para el ciclo
 		int i;
 		for (i = 0; i < 80000; i++)    /* Wait a bit. */
 			__asm__("nop");
