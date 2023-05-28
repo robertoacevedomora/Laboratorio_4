@@ -1,3 +1,9 @@
+//Incluyo las bibliotecas
+#include <errno.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <libopencm3/stm32/adc.h>
+#include <libopencm3/stm32/dac.h>
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/usart.h>
 #include <libopencm3/stm32/spi.h>
@@ -137,9 +143,18 @@ static void giro_setup(void)
 }
 
 //Funcion que lee y retorna el valor de los 3 ejes
-struct Giroscopio read_giro(void)
+struct Giroscopio 
 {
-    struct Giroscopio ejes;
+    int16_t gyr_x;
+    int16_t gyr_y;
+    int16_t gyr_z;
+};
+typedef struct Giroscopio read_giro;
+
+read_giro Giro_ejes(void);
+read_giro Giro_ejes(void)
+{
+    read_giro eje;
 
     gpio_clear(GPIOE, GPIO3);
 	spi_send(SPI5, GYR_WHO_AM_I | GYR_RNW);
@@ -166,53 +181,82 @@ struct Giroscopio read_giro(void)
 	spi_send(SPI5, GYR_OUT_X_L | GYR_RNW);
 	spi_read(SPI5);
 	spi_send(SPI5, 0);
-	ejes.x=spi_read(SPI5);    //En gyr_x se guarda el valor
+	eje.x=spi_read(SPI5);    //En gyr_x se guarda el valor
 	gpio_set(GPIOE, GPIO3);
 
 	gpio_clear(GPIOE, GPIO3);
 	spi_send(SPI5, GYR_OUT_X_H | GYR_RNW);
 	spi_read(SPI5);
 	spi_send(SPI5, 0);
-	ejes.x|=spi_read(SPI5) << 8;  //Desplazamiento y mascar or
+	eje.x|=spi_read(SPI5) << 8;  //Desplazamiento y mascar or
 	gpio_set(GPIOE, GPIO3);
 
     gpio_clear(GPIOE, GPIO3);
 	spi_send(SPI5, GYR_OUT_Y_L | GYR_RNW);
 	spi_read(SPI5);
 	spi_send(SPI5, 0);
-	ejes.y=spi_read(SPI5);    //En gyr_x se guarda el valor
+	eje.y=spi_read(SPI5);    //En gyr_x se guarda el valor
 	gpio_set(GPIOE, GPIO3);
 
 	gpio_clear(GPIOE, GPIO3);
 	spi_send(SPI5, GYR_OUT_Y_H | GYR_RNW);
 	spi_read(SPI5);
 	spi_send(SPI5, 0);
-	ejes.y|=spi_read(SPI5) << 8;  //Desplazamiento y mascar or
+	eje.y|=spi_read(SPI5) << 8;  //Desplazamiento y mascar or
 	gpio_set(GPIOE, GPIO3);
 
     gpio_clear(GPIOE, GPIO3);
 	spi_send(SPI5, GYR_OUT_Z_L | GYR_RNW);
 	spi_read(SPI5);
 	spi_send(SPI5, 0);
-	ejes.z=spi_read(SPI5);    //En gyr_x se guarda el valor
+	eje.z=spi_read(SPI5);    //En gyr_x se guarda el valor
 	gpio_set(GPIOE, GPIO3);
 
 	gpio_clear(GPIOE, GPIO3);
 	spi_send(SPI5, GYR_OUT_Z_H | GYR_RNW);
 	spi_read(SPI5);
 	spi_send(SPI5, 0);
-	ejes.z|=spi_read(SPI5) << 8;  //Desplazamiento y mascar or
+	eje.z|=spi_read(SPI5) << 8;  //Desplazamiento y mascar or
 	gpio_set(GPIOE, GPIO3);
 
     return ejes;
 
 }
 
+/***********Convertidor analogico digital, funciones del archivo ejemplo********************/
+//Congiura el convertidor analogico digital
+static void adc_setup(void)
+{
+	//Prints the ADC value on PA0 (adc channel 0) on the console, eliminamo el A1
+   // gpio_mode_setup(GPIOA, GPIO_MODE_ANALOG, GPIO_PUPD_NONE, GPIO0); //Revisarlo, solo usamos uno adc
+	gpio_mode_setup(GPIOA, GPIO_MODE_ANALOG, GPIO_PUPD_NONE, GPIO1);
+
+	adc_power_off(ADC1);
+	adc_disable_scan_mode(ADC1);
+	adc_set_sample_time_on_all_channels(ADC1, ADC_SMPR_SMP_3CYC);
+
+	adc_power_on(ADC1);
+
+}
+
+//Funcion para leer el convertidor analogico digital
+static uint16_t read_adc_naiive(uint8_t channel)
+{
+	uint8_t channel_array[16];
+	channel_array[0] = channel;
+	adc_set_regular_sequence(ADC1, 1, channel_array);
+	adc_start_conversion_regular(ADC1);
+	while (!adc_eoc(ADC1));
+	uint16_t reg16 = adc_read_regular(ADC1);
+	return reg16;
+}
+
+
 
 int main(void)
 {
-	uint8_t temp;
-	int16_t gyr_x; //Variable de 16 bits que guarda el valor de gyr_x. Hacer otras dos para y y z.
+	//uint8_t temp;
+	//int16_t gyr_x; //Variable de 16 bits que guarda el valor de gyr_x. Hacer otras dos para y y z.
 	//Las dejamos porque se van a utilizar
     clock_setup();
 	gpio_setup();
