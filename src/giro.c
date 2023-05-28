@@ -120,19 +120,19 @@ static void clock_setup(void)
 static void giro_setup(void)
 {
     gpio_clear(GPIOE, GPIO3);
-	spi_send(SPI1, GYR_CTRL_REG1);
-	spi_read(SPI1);
-	spi_send(SPI1, GYR_CTRL_REG1_PD | GYR_CTRL_REG1_XEN |
+	spi_send(SPI5, GYR_CTRL_REG1);
+	spi_read(SPI5);
+	spi_send(SPI5, GYR_CTRL_REG1_PD | GYR_CTRL_REG1_XEN |
 			GYR_CTRL_REG1_YEN | GYR_CTRL_REG1_ZEN |
 			(3 << GYR_CTRL_REG1_BW_SHIFT));
-	spi_read(SPI1);
+	spi_read(SPI5);
 	gpio_set(GPIOE, GPIO3);
 
 	gpio_clear(GPIOE, GPIO3);
-	spi_send(SPI1, GYR_CTRL_REG4);
-	spi_read(SPI1);
-	spi_send(SPI1, (1 << GYR_CTRL_REG4_FS_SHIFT));
-	spi_read(SPI1);
+	spi_send(SPI5, GYR_CTRL_REG4);
+	spi_read(SPI5);
+	spi_send(SPI5, (1 << GYR_CTRL_REG4_FS_SHIFT));
+	spi_read(SPI5);
 	gpio_set(GPIOE, GPIO3);    
 }
 
@@ -180,29 +180,31 @@ struct Giroscopio read_giro(void)
 	spi_send(SPI5, GYR_OUT_Y_L | GYR_RNW);
 	spi_read(SPI5);
 	spi_send(SPI5, 0);
-	ejes.x=spi_read(SPI5);    //En gyr_x se guarda el valor
+	ejes.y=spi_read(SPI5);    //En gyr_x se guarda el valor
 	gpio_set(GPIOE, GPIO3);
 
 	gpio_clear(GPIOE, GPIO3);
 	spi_send(SPI5, GYR_OUT_Y_H | GYR_RNW);
 	spi_read(SPI5);
 	spi_send(SPI5, 0);
-	ejes.x|=spi_read(SPI5) << 8;  //Desplazamiento y mascar or
+	ejes.y|=spi_read(SPI5) << 8;  //Desplazamiento y mascar or
 	gpio_set(GPIOE, GPIO3);
 
     gpio_clear(GPIOE, GPIO3);
 	spi_send(SPI5, GYR_OUT_Z_L | GYR_RNW);
 	spi_read(SPI5);
 	spi_send(SPI5, 0);
-	ejes.x=spi_read(SPI5);    //En gyr_x se guarda el valor
+	ejes.z=spi_read(SPI5);    //En gyr_x se guarda el valor
 	gpio_set(GPIOE, GPIO3);
 
 	gpio_clear(GPIOE, GPIO3);
 	spi_send(SPI5, GYR_OUT_Z_H | GYR_RNW);
 	spi_read(SPI5);
 	spi_send(SPI5, 0);
-	ejes.x|=spi_read(SPI5) << 8;  //Desplazamiento y mascar or
+	ejes.z|=spi_read(SPI5) << 8;  //Desplazamiento y mascar or
 	gpio_set(GPIOE, GPIO3);
+
+    return ejes;
 
 }
 
