@@ -3,24 +3,7 @@
 #include <libopencm3/stm32/spi.h>
 #include <libopencm3/stm32/gpio.h>
 
-#define LBLUE GPIOE, GPIO8
-#define LRED GPIOE, GPIO9
-#define LORANGE GPIOE, GPIO10
-#define LGREEN GPIOE, GPIO11
-#define LBLUE2 GPIOE, GPIO12
-#define LRED2 GPIOE, GPIO13
-#define LORANGE2 GPIOE, GPIO14
-#define LGREEN2 GPIOE, GPIO15
-
-#define LD4 GPIOE, GPIO8
-#define LD3 GPIOE, GPIO9
-#define LD5 GPIOE, GPIO10
-#define LD7 GPIOE, GPIO11
-#define LD9 GPIOE, GPIO12
-#define LD10 GPIOE, GPIO13
-#define LD8 GPIOE, GPIO14
-#define LD6 GPIOE, GPIO15
-
+//Funcion para configurar la comunicacion spi, en este caso hay que usar SPI5.
 static void spi_setup(void)
 {
 	rcc_periph_clock_enable(RCC_SPI1);
@@ -119,6 +102,7 @@ static void clock_setup(void)
 	rcc_clock_setup_hsi(&rcc_hsi_configs[RCC_CLOCK_HSI_64MHZ]);
 }
 
+//Giroscopio
 #define GYR_RNW			(1 << 7) /* Write when zero */
 #define GYR_MNS			(1 << 6) /* Multiple reads when 1 */
 #define GYR_WHO_AM_I		0x0F
@@ -135,6 +119,7 @@ static void clock_setup(void)
 
 #define GYR_OUT_X_L		0x28
 #define GYR_OUT_X_H		0x29
+//Faltan agregar ejes y,z.
 
 int main(void)
 {
