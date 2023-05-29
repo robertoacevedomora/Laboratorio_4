@@ -45,7 +45,7 @@
 
 //Faltan agregar ejes y,z.
 
-
+#define L3GD20_SENSITIVITY_250DPS  (0.00875F) //Sensibilidad
 
 
 //Funcion para configurar la comunicacion spi, en este caso hay que usar SPI5. 
@@ -226,6 +226,10 @@ read_giro Giro_ejes(void)
 	eje.gyr_z|=spi_read(SPI5) << 8;  //Desplazamiento y mascar or
 	gpio_set(GPIOE, GPIO3);
 
+	eje.gyr_x = eje.gyr_x*L3GD20_SENSITIVITY_250DPS;
+	eje.gyr_y = eje.gyr_y*L3GD20_SENSITIVITY_250DPS;
+	eje.gyr_z = eje.gyr_z*L3GD20_SENSITIVITY_250DPS;
+
     return eje;
 
 }
@@ -297,9 +301,10 @@ int main(void)
 	//Las dejamos porque se van a utilizar
     read_giro eje;
 	//Despues de la declaracion, inicializo en cero
-	eje.gyr_x = 0;
-	eje.gyr_y = 0;
-	eje.gyr_z = 0;
+	//eje.gyr_x = 0;
+	//eje.gyr_y = 0;
+	//eje.gyr_z = 0;
+	
 	gpio_setup();
 	usart_setup();
 	spi_setup();
@@ -314,7 +319,7 @@ int main(void)
 	msleep(2000);
 /*	(void) console_getc(1); */
 	gfx_init(lcd_draw_pixel, 240, 320);
-	gfx_fillScreen(LCD_GREY);
+	//gfx_fillScreen(LCD_GREY);
 	
 	//Para realizar la lectura hay que formatear, de entero a cadena de caracteres.
 	//Creamos una cadena de caracteres
@@ -355,61 +360,45 @@ int main(void)
 
 		sprintf(gyrpe_x, "%s", "Eje x:");       // Escribir el string "X:" en la cadena print_x
 		sprintf(gyrp_x, "%d",  eje.gyr_x);
+		sprintf(gyrpe_y, "%s", "Eje y:");       // Escribir el string "X:" en la cadena print_x
+		sprintf(gyrp_y, "%d",  eje.gyr_y);
+		sprintf(gyrpe_z, "%s", "Eje z:");       // Escribir el string "X:" en la cadena print_x
+		sprintf(gyrp_z, "%d",  eje.gyr_z);
 
 //Este blopque de codigo viene del archivo example, lcd-serial.c 
 		
 		gfx_fillScreen(LCD_CYAN); //Lena la pantalla principal
 		gfx_setCursor(15, 36);
-		gfx_puts("GIROSCOPIO");
+		gfx_setTextColor(LCD_BLUE, LCD_BLACK);
 		gfx_setTextSize(2);
-	    gfx_setCursor(15, 60);
-		gfx_setTextColor(LCD_YELLOW, LCD_RED);
 		gfx_puts("GIROSCOPIO");
-
-		gfx_setCursor(15,75);
+		
+	    gfx_setCursor(15,70);
+		gfx_setTextSize(1);
+		gfx_setTextColor(LCD_BLACK,LCD_GREEN);
 		gfx_puts(gyrp_x);
+
+		gfx_setCursor(15,100);
+		gfx_setTextSize(1);
+		gfx_setTextColor(LCD_BLACK,LCD_GREEN);
+		gfx_puts(gyrp_y);
+
+		gfx_setCursor(15,130);
+		gfx_setTextSize(1);
+		gfx_setTextColor(LCD_BLACK,LCD_GREEN);
+		gfx_puts(gyrp_z);
+
+		gfx_setCursor(15,190);
 		gfx_setTextSize(2);
-		gfx_setTextColor(LCD_BLUE,LCD_GREEN);
-		gfx_fillCircle(120, 160, 40, LCD_YELLOW);
+		gfx_setTextColor(LCD_BLACK,LCD_GREEN);
+		gfx_puts(gyrpe_x);
+		
+		//gfx_fillCircle(120, 160, 40, LCD_YELLOW);
 		lcd_show_frame();
 
 //Esto permite lectura de registros y del eje x, hay que agregarle la parte alta del eje x y los ejes z y y.
 //Eliminamos los 8, cambiamos SPI1 por SPI5. Tambien segun la rutina de las diapositvas falta agregarle un read, que
 //en este caso aprece con un temp.		
-       /** gpio_clear(GPIOE, GPIO3);
-		spi_send(SPI1, GYR_WHO_AM_I | GYR_RNW);
-		spi_read(SPI1);
-		spi_send(SPI1, 0);
-		spi_read(SPI1);
-		gpio_set(GPIOE, GPIO3);
-
-		gpio_clear(GPIOE, GPIO3);
-		spi_send(SPI1, GYR_STATUS_REG | GYR_RNW);
-		spi_read(SPI1);
-		spi_send(SPI1, 0);
-		spi_read(SPI1);
-		gpio_set(GPIOE, GPIO3);
-
-		gpio_clear(GPIOE, GPIO3);
-		spi_send(SPI1, GYR_OUT_TEMP | GYR_RNW);
-		spi_read(SPI1);
-		spi_send(SPI1, 0);
-		spi_read(SPI1);
-		gpio_set(GPIOE, GPIO3);
-
-		gpio_clear(GPIOE, GPIO3);
-		spi_send(SPI1, GYR_OUT_X_L | GYR_RNW);
-		spi_read(SPI1);
-		spi_send(SPI1, 0);
-		gyr_x=spi_read(SPI1);    //En gyr_x se guarda el valor
-		gpio_set(GPIOE, GPIO3);
-
-		gpio_clear(GPIOE, GPIO3);
-		spi_send(SPI1, GYR_OUT_X_H | GYR_RNW);
-		spi_read(SPI1);
-		spi_send(SPI1, 0);
-		gyr_x|=spi_read(SPI1) << 8;  //Desplazamiento y mascar or
-		gpio_set(GPIOE, GPIO3); **/
 
 //Para el ciclo
 		int i;
