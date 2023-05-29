@@ -2,17 +2,22 @@
 #include <errno.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <stdint.h>//LCD-SERIAL
+#include <math.h>//LCD-SERIAL
+
+#include "clock.h"
+#include "console.h"
+#include "sdram.h"
+#include "lcd-spi.h"
+#include "gfx.h"
+
 #include <libopencm3/stm32/adc.h>
 #include <libopencm3/stm32/dac.h>
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/usart.h>
 #include <libopencm3/stm32/spi.h>
 #include <libopencm3/stm32/gpio.h>
-#include "clock.h"
-#include "console.h"
-#include "sdram.h"
-#include "lcd-spi.h"
-#include "gfx.h"
+
 
 
 
@@ -300,6 +305,16 @@ int main(void)
 	spi_setup();
     giro_setup();
     adc_setup();
+	clock_setup();//LCD-SERIAL
+	console_setup(115200);//LCD-SERIAL
+	sdram_init();
+	lcd_spi_init();
+	console_puts("LCD Initialized\n");
+	console_puts("Should have a checker pattern, press any key to proceed\n");
+	msleep(2000);
+/*	(void) console_getc(1); */
+	gfx_init(lcd_draw_pixel, 240, 320);
+	gfx_fillScreen(LCD_GREY);
 	
 	//Para realizar la lectura hay que formatear, de entero a cadena de caracteres.
 	//Creamos una cadena de caracteres
@@ -342,23 +357,11 @@ int main(void)
 		sprintf(gyrp_x, "%d",  eje.gyr_x);
 
 //Este blopque de codigo viene del archivo example, lcd-serial.c 
-		gfx_fillScreen(LCD_BLACK);
+		
+		gfx_fillScreen(LCD_BLACK); //Lena la pantalla principal
 		gfx_setCursor(15, 36);
 		gfx_puts("PLANETS!");
 		gfx_fillCircle(120, 160, 40, LCD_YELLOW);
-		gfx_drawCircle(120, 160, 55, LCD_GREY);
-		gfx_drawCircle(120, 160, 75, LCD_GREY);
-		gfx_drawCircle(120, 160, 100, LCD_GREY);
-
-		gfx_fillCircle(120 + (sin(d2r(p1)) * 55),
-			       160 + (cos(d2r(p1)) * 55), 5, LCD_RED);
-		gfx_fillCircle(120 + (sin(d2r(p2)) * 75),
-			       160 + (cos(d2r(p2)) * 75), 10, LCD_WHITE);
-		gfx_fillCircle(120 + (sin(d2r(p3)) * 100),
-			       160 + (cos(d2r(p3)) * 100), 8, LCD_BLUE);
-		p1 = (p1 + 3) % 360;
-		p2 = (p2 + 2) % 360;
-		p3 = (p3 + 1) % 360;
 		lcd_show_frame();
 
 //Esto permite lectura de registros y del eje x, hay que agregarle la parte alta del eje x y los ejes z y y.
