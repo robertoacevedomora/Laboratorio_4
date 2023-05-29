@@ -358,9 +358,18 @@ int main(void)
 
 //Este blopque de codigo viene del archivo example, lcd-serial.c 
 		
-		gfx_fillScreen(LCD_BLACK); //Lena la pantalla principal
+		gfx_fillScreen(LCD_CYAN); //Lena la pantalla principal
 		gfx_setCursor(15, 36);
-		gfx_puts("PLANETS!");
+		gfx_puts("GIROSCOPIO");
+		gfx_setTextSize(2);
+	    gfx_setCursor(15, 60);
+		gfx_setTextColor(LCD_YELLOW, LCD_RED);
+		gfx_puts("GIROSCOPIO");
+
+		gfx_setCursor(15,75);
+		gfx_puts(gyrp_x);
+		gfx_setTextSize(2);
+		gfx_setTextColor(LCD_BLUE,LCD_GREEN);
 		gfx_fillCircle(120, 160, 40, LCD_YELLOW);
 		lcd_show_frame();
 
