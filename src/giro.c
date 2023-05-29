@@ -311,7 +311,6 @@ int main(void)
 	char gyrp_x[10];
 	char gyrp_y[10];
 	char gyrp_z[10];
-	char gyr_var[10] = ""; //VARIABLE AUXILIAR
 
 	//Inicializar valores en cero
 	
