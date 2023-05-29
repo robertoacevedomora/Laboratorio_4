@@ -288,12 +288,13 @@ int main(void)
 {
 	//uint8_t temp;
 	//int16_t gyr_x; //Variable de 16 bits que guarda el valor de gyr_x. Hacer otras dos para y y z.
-	// INICIO la variables en cero
+	
+	//Las dejamos porque se van a utilizar
+    read_giro eje;
+	//Despues de la declaracion, inicializo en cero
 	eje.gyr_x = 0;
 	eje.gyr_y = 0;
 	eje.gyr_z = 0;
-	//Las dejamos porque se van a utilizar
-    read_giro eje;
 	gpio_setup();
 	usart_setup();
 	spi_setup();
@@ -337,8 +338,28 @@ int main(void)
 		//Formatear los valores de los ejes a cadenas de caracteres
 
 
-		sprintf(gyrpe_x, "%s", "X:");       // Escribir el string "X:" en la cadena print_x
-		sprintf(gyrp_x, "%d",  eje.x);
+		sprintf(gyrpe_x, "%s", "Eje x:");       // Escribir el string "X:" en la cadena print_x
+		sprintf(gyrp_x, "%d",  eje.gyr_x);
+
+//Este blopque de codigo viene del archivo example, lcd-serial.c 
+		gfx_fillScreen(LCD_BLACK);
+		gfx_setCursor(15, 36);
+		gfx_puts("PLANETS!");
+		gfx_fillCircle(120, 160, 40, LCD_YELLOW);
+		gfx_drawCircle(120, 160, 55, LCD_GREY);
+		gfx_drawCircle(120, 160, 75, LCD_GREY);
+		gfx_drawCircle(120, 160, 100, LCD_GREY);
+
+		gfx_fillCircle(120 + (sin(d2r(p1)) * 55),
+			       160 + (cos(d2r(p1)) * 55), 5, LCD_RED);
+		gfx_fillCircle(120 + (sin(d2r(p2)) * 75),
+			       160 + (cos(d2r(p2)) * 75), 10, LCD_WHITE);
+		gfx_fillCircle(120 + (sin(d2r(p3)) * 100),
+			       160 + (cos(d2r(p3)) * 100), 8, LCD_BLUE);
+		p1 = (p1 + 3) % 360;
+		p2 = (p2 + 2) % 360;
+		p3 = (p3 + 1) % 360;
+		lcd_show_frame();
 
 //Esto permite lectura de registros y del eje x, hay que agregarle la parte alta del eje x y los ejes z y y.
 //Eliminamos los 8, cambiamos SPI1 por SPI5. Tambien segun la rutina de las diapositvas falta agregarle un read, que
