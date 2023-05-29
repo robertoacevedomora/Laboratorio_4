@@ -288,6 +288,10 @@ int main(void)
 {
 	//uint8_t temp;
 	//int16_t gyr_x; //Variable de 16 bits que guarda el valor de gyr_x. Hacer otras dos para y y z.
+	// INICIO la variables en cero
+	eje.gyr_x = 0;
+	eje.gyr_y = 0;
+	eje.gyr_z = 0;
 	//Las dejamos porque se van a utilizar
     read_giro eje;
 	gpio_setup();
@@ -295,6 +299,22 @@ int main(void)
 	spi_setup();
     giro_setup();
     adc_setup();
+	
+	//Para realizar la lectura hay que formatear, de entero a cadena de caracteres.
+	//Creamos una cadena de caracteres
+	//Encabezados
+	char gyrpe_x[10];
+	char gyrpe_y[10];
+	char gyrpe_z[10];
+	
+	//Valores
+	char gyrp_x[10];
+	char gyrp_y[10];
+	char gyrp_z[10];
+	char gyr_var[10] = ""; //VARIABLE AUXILIAR
+
+	//Inicializar valores en cero
+	
     
     // Comandos configuracion para el giroscopio, queda mejor como una nueva funcion porque el main lleva mas cosas.
 	/**gpio_clear(GPIOE, GPIO3);
@@ -314,6 +334,13 @@ int main(void)
 	gpio_set(GPIOE, GPIO3);**/
 
 	while (1) {
+
+		//Formatear los valores de los ejes a cadenas de caracteres
+
+
+		sprintf(gyrpe_x, "%s", "X:");       // Escribir el string "X:" en la cadena print_x
+		sprintf(gyrp_x, "%d",  eje.x);
+
 //Esto permite lectura de registros y del eje x, hay que agregarle la parte alta del eje x y los ejes z y y.
 //Eliminamos los 8, cambiamos SPI1 por SPI5. Tambien segun la rutina de las diapositvas falta agregarle un read, que
 //en este caso aprece con un temp.		
