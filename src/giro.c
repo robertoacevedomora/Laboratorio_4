@@ -303,19 +303,27 @@ int main(void)
 	//Las dejamos porque se van a utilizar
     read_giro eje;
 	//Despues de la declaracion, inicializo en cero
-		eje.gyr_x = 0;
+	eje.gyr_x = 0;
 	eje.gyr_y = 0;
 	eje.gyr_z = 0;
 		//Cadena de caracteres
 	char gyrp_x[10];
 	char gyrp_y[10];
 	char gyrp_z[10];
+	
+
+	//Conexion
+
+	char * USB_cone = "OFF"; 
+	char cone[10];
+	 bool conexion = false; 
+	//Bateria
+	float nivel; //Variable nivel de bateria
+	char nivel_p[10];			// Variable para indicar si se envian los datos
+	uint16_t adc1;              //Entero de la funcion adc
 
 	//Auxiliar
 	char aux[10] = "";
-	
-	
-	
 	
 	console_setup(115200);//LCD-SERIAL
 	clock_setup();//LCD-SERIAL
@@ -339,27 +347,7 @@ int main(void)
 	gfx_init(lcd_draw_pixel, 240, 320);
 	//gfx_fillScreen(LCD_GREY);
 	
-	//Para realizar la lectura hay que formatear, de entero a cadena de caracteres.
-	//Creamos una cadena de caracteres
-	//Encabezado
-	
-    
-    // Comandos configuracion para el giroscopio, queda mejor como una nueva funcion porque el main lleva mas cosas.
-	/**gpio_clear(GPIOE, GPIO3);
-	spi_send(SPI1, GYR_CTRL_REG1);
-	spi_read(SPI1);
-	spi_send(SPI1, GYR_CTRL_REG1_PD | GYR_CTRL_REG1_XEN |
-			GYR_CTRL_REG1_YEN | GYR_CTRL_REG1_ZEN |
-			(3 << GYR_CTRL_REG1_BW_SHIFT));
-	spi_read(SPI1);
-	gpio_set(GPIOE, GPIO3);
 
-	gpio_clear(GPIOE, GPIO3);
-	spi_send(SPI1, GYR_CTRL_REG4);
-	spi_read(SPI1);
-	spi_send(SPI1, (1 << GYR_CTRL_REG4_FS_SHIFT));
-	spi_read(SPI1);
-	gpio_set(GPIOE, GPIO3);**/
 
 	while (1) {
 
@@ -404,12 +392,45 @@ int main(void)
 		gfx_setTextSize(2);
 		gfx_setTextColor(LCD_BLUE,LCD_WHITE);
 		gfx_puts(gyrp_z);
-		
+ //Imprimir nivel de la bateria
+		adc1 = read_adc_naiive(1);       
+		// nivel = ((adc1*8.64)/510); 
+		nivel = adc1;
+
+	    sprintf(nivel_p, "%s", "Nivel:");
+		sprintf(aux, "%f",  nivel);
+		strcat(nivel_p, aux);
+
+		gfx_setCursor(15,160);
+		gfx_setTextSize(2);
+		gfx_setTextColor(LCD_BLUE,LCD_WHITE);
+		gfx_puts(nivel_p);
+
+
+
+ //Imprimir USB
+
+		sprintf(cone, "%s", "Conexion:");
+		sprintf(aux, "%s",  USB_cone);
+		strcat(cone, aux);
+
+		gfx_setCursor(15,190);
+		gfx_setTextSize(2);
+		gfx_setTextColor(LCD_BLUE,LCD_WHITE);
+		gfx_puts(cone);
+
+
+
+
 		//gfx_fillCircle(120, 160, 40, LCD_YELLOW);
 		lcd_show_frame();
 		gpio_clear(GPIOC, GPIO1); 
 		eje = leer_ejes(); //Leer el valor de los ejes
 		gpio_set(GPIOC, GPIO1); 
+
+
+   //Bateria y adc
+		
 
 		
 
@@ -417,6 +438,50 @@ int main(void)
 //Eliminamos los 8, cambiamos SPI1 por SPI5. Tambien segun la rutina de las diapositvas falta agregarle un read, que
 //en este caso aprece con un temp.		
 
+		if (conexion)                               
+		{
+			/*  LLamada funcion print_decimal para imprimir la lecturas 
+			ejes y nivel de bateria */
+			           // Indica si puerto funciona
+			print_decimal(eje.gyr_x);             
+			console_puts("\t");
+       	 	print_decimal(eje.gyr_y);
+			console_puts("\t");
+        	print_decimal(eje.gyr_z); 
+			console_puts("\t");
+			print_decimal(nivel); 
+			USB_cone = "ON"; 
+			console_puts("\n");
+			// Toggle del pin 13, puerto G, parpadeo indica envio exitoso 
+			gpio_toggle(GPIOG, GPIO13);     
+		}
+		//  Sucede si variable booleana enviar es falsa
+		else{                                     
+			USB_cone = "OFF";        // Indica si puerto no funciona
+			// apagando el LED del pin 13, puerto G
+			gpio_clear(GPIOG, GPIO13);             
+		}
+
+		/* Verifica si el nivel de bateria es menor a 7 */
+		if (nivel<7)
+		{   
+			// Toggle del pin 14, puerto G, enciende led, indica bateria baja
+			gpio_toggle(GPIOG, GPIO14);
+		}
+
+		else gpio_clear(GPIOG, GPIO14); // Apaga led pin 14, puerto G
+		
+
+		/* Si se detecta que GPIO0 esta en un estado logico alto (1) */  
+		if (gpio_get(GPIOA, GPIO0)) {      
+			// Si enviar es verdadero, se cambia a falso y apaga el LED conectado al pin 13
+			if (conexion) {
+				conexion = false;
+				gpio_clear(GPIOG, GPIO13);
+			}
+			// Si enviar es falso, se cambia a verdadero y se enciende el LED conectado al pin 13
+			else conexion = true;
+		}
 //Para el ciclo
 		int i;
 		for (i = 0; i < 80000; i++)    /* Wait a bit. */
