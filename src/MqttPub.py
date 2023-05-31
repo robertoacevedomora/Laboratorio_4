@@ -5,7 +5,12 @@ import serial
 
 
 #Puerto
-ser = serial.Serial('COM4')
+ser = serial.Serial('COM4',115200,timeout =0)
+
+while True:
+    data = ser.readline()
+    data_sensor = data.decode('utf8')
+    print(data_sensor)
 
 #Broker
 #broker = "iot.eie.ucr.ac.cr"
