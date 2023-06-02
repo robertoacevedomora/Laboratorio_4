@@ -46,7 +46,7 @@
 
 //Faltan agregar ejes y,z.
 //Sensibilidad, importante
-#define L3GD20_SENSITIVITY_250DPS  (0.00875F) //Sensibilidad
+#define Sensibilidad (0.00875F) //Sensibilidad
 
 
 //Funcion para configurar la comunicacion spi, en este caso hay que usar SPI5. 
@@ -99,7 +99,7 @@ static void usart_setup(void)
 	gpio_set_af(GPIOA, GPIO_AF7, GPIO9);
 
 	/* Setup UART parameters. */
-	usart_set_baudrate(USART1, 115200);
+	usart_set_baudrate(USART1, 115200); //Python
 	usart_set_databits(USART1, 8);
 	usart_set_stopbits(USART1, USART_STOPBITS_1);
 	//usart_set_mode(USART2, USART_MODE_TX_RX);
@@ -228,9 +228,9 @@ read_giro leer_ejes(void)
 	eje.gyr_z|=spi_read(SPI5) << 8;  //Desplazamiento y mascar or
 	gpio_set(GPIOC, GPIO1);
 
-	eje.gyr_x = eje.gyr_x*L3GD20_SENSITIVITY_250DPS;
-	eje.gyr_y = eje.gyr_y*L3GD20_SENSITIVITY_250DPS;
-	eje.gyr_z = eje.gyr_z*L3GD20_SENSITIVITY_250DPS;
+	eje.gyr_x = eje.gyr_x*Sensibilidad;
+	eje.gyr_y = eje.gyr_y*Sensibilidad;
+	eje.gyr_z = eje.gyr_z*Sensibilidad;
 
     return eje;
 
@@ -438,48 +438,41 @@ int main(void)
 //Eliminamos los 8, cambiamos SPI1 por SPI5. Tambien segun la rutina de las diapositvas falta agregarle un read, que
 //en este caso aprece con un temp.		
 
-		if (conexion)                               
+		if (conexion)   //USART                             
 		{
-			/*  LLamada funcion print_decimal para imprimir la lecturas 
-			ejes y nivel de bateria */
-			           // Indica si puerto funciona
+			USB_cone = "Encendida";            // Enviamos los valores de los ejes
 			print_decimal(eje.gyr_x);             
 			console_puts("\t");
        	 	print_decimal(eje.gyr_y);
 			console_puts("\t");
         	print_decimal(eje.gyr_z); 
 			console_puts("\t");
-			print_decimal(nivel); 
-			USB_cone = "ON"; 
-			console_puts("\n");
-			// Toggle del pin 13, puerto G, parpadeo indica envio exitoso 
+			
 			gpio_toggle(GPIOG, GPIO13);     
 		}
-		//  Sucede si variable booleana enviar es falsa
 		else{                                     
-			USB_cone = "OFF";        // Indica si puerto no funciona
-			// apagando el LED del pin 13, puerto G
+			USB_cone = "Apagada";     //Chequeo de leds     
+			
 			gpio_clear(GPIOG, GPIO13);             
 		}
 
-		/* Verifica si el nivel de bateria es menor a 7 */
+		
 		if (nivel<7)
 		{   
-			// Toggle del pin 14, puerto G, enciende led, indica bateria baja
+			
 			gpio_toggle(GPIOG, GPIO14);
 		}
 
-		else gpio_clear(GPIOG, GPIO14); // Apaga led pin 14, puerto G
+		else gpio_clear(GPIOG, GPIO14); 
 		
 
-		/* Si se detecta que GPIO0 esta en un estado logico alto (1) */  
+		
 		if (gpio_get(GPIOA, GPIO0)) {      
-			// Si enviar es verdadero, se cambia a falso y apaga el LED conectado al pin 13
+			
 			if (conexion) {
 				conexion = false;
 				gpio_clear(GPIOG, GPIO13);
 			}
-			// Si enviar es falso, se cambia a verdadero y se enciende el LED conectado al pin 13
 			else conexion = true;
 		}
 //Para el ciclo
