@@ -1,4 +1,5 @@
 //Incluyo las bibliotecas
+//libs
 #include <errno.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -139,6 +140,7 @@ static void giro_setup(void)
 	spi_read(SPI5);
 	spi_send(SPI5, GYR_CTRL_REG1_PD | GYR_CTRL_REG1_XEN |
 			GYR_CTRL_REG1_YEN | GYR_CTRL_REG1_ZEN |
+
 			(3 << GYR_CTRL_REG1_BW_SHIFT));
 	spi_read(SPI5);
 	gpio_set(GPIOC, GPIO1);
