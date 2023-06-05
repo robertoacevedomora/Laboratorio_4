@@ -1,4 +1,5 @@
 //Incluyo las bibliotecas
+//libs
 #include <errno.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -128,6 +129,7 @@ static void giro_setup(void)
 	spi_read(SPI5); //Leemos la respuesta
 	spi_send(SPI5, GYR_CTRL_REG1_PD | GYR_CTRL_REG1_XEN |
 			GYR_CTRL_REG1_YEN | GYR_CTRL_REG1_ZEN |
+<<<<<<< HEAD
 			(3 << GYR_CTRL_REG1_BW_SHIFT)); //Enviamos registros de control eje x, y y z
 	spi_read(SPI5); //Leemos la respuesta
 	gpio_set(GPIOC, GPIO1); // Modificamos otra vez el chip select para poner detener el funcionamiento del giroscopio.
@@ -139,6 +141,19 @@ static void giro_setup(void)
 	spi_send(SPI5, (1 << GYR_CTRL_REG4_FS_SHIFT)); //Enviamos escala de medicion
 	spi_read(SPI5); //Lectura de la respuesta
 	gpio_set(GPIOC, GPIO1);  // Modificamos otra vez el chip select para poner detener el funcionamiento del giroscopio.  
+=======
+
+			(3 << GYR_CTRL_REG1_BW_SHIFT));
+	spi_read(SPI5);
+	gpio_set(GPIOC, GPIO1);
+
+	gpio_clear(GPIOC, GPIO1);
+	spi_send(SPI5, GYR_CTRL_REG4);
+	spi_read(SPI5);
+	spi_send(SPI5, (1 << GYR_CTRL_REG4_FS_SHIFT));
+	spi_read(SPI5);
+	gpio_set(GPIOC, GPIO1);    
+>>>>>>> 8fe111d5bfb8ea5c319a166c405a68ae443d0426
 }
 
 //Estructura Giroscopio, con los 3 ejes
