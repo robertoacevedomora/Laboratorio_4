@@ -1,0 +1,155 @@
+[33mcommit 0447b7cc633d793cc6f2dc6dea37656821a0fa8c[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: robertoacevedomora <roberto.acevedo@ucr.ac.cr>
+Date:   Fri Jun 2 17:25:24 2023 -0600
+
+    Envio ejes iot
+
+[33mcommit 1de16c2af2de918c4a9de0eb40edfaf659f22a79[m
+Author: robertoacevedomora <roberto.acevedo@ucr.ac.cr>
+Date:   Wed May 31 11:33:07 2023 -0600
+
+    Ya estoy transmitiendo los datos del stm32 a python
+
+[33mcommit a5c091d4ae9291fa6d351491dd5ad506513d73f4[m
+Author: robertoacevedomora <roberto.acevedo@ucr.ac.cr>
+Date:   Wed May 31 11:24:22 2023 -0600
+
+    Se pueden leer los ejes en la pantalla de la tarjeta, antes no servia debido a un problema de conexion en los puertos. Se comienza a trabajr en la conexion USART y posteriormente en la Iot
+
+[33mcommit 5b06c63b4949baffa0b9428f7adf46d2863ac7ad[m
+Author: robertoacevedomora <roberto.acevedo@ucr.ac.cr>
+Date:   Mon May 29 22:53:27 2023 -0600
+
+    Se modificaron algunos puertos como en el caso del spi_Setup porque el giroscopio no trabajaba de forma adecuada. Se agregaron las funciones y el codigo para que los datos del giroscopio aprezca en la pantalla
+
+[33mcommit 6969ea6a9942a27db1ea6c9e43cc944cd99fc09e[m
+Author: robertoacevedomora <roberto.acevedo@ucr.ac.cr>
+Date:   Mon May 29 13:36:21 2023 -0600
+
+    Problemas para obtener en pantalla el valor de los ejes
+
+[33mcommit a21a3577efcc0d6d08f880a6bec3aa693005de12[m
+Author: robertoacevedomora <roberto.acevedo@ucr.ac.cr>
+Date:   Mon May 29 11:15:16 2023 -0600
+
+    Configurando la pantalla LCD
+
+[33mcommit 14c7447325b02eb5a276849a3fefd3fcf480fac0[m
+Author: robertoacevedomora <roberto.acevedo@ucr.ac.cr>
+Date:   Mon May 29 10:53:02 2023 -0600
+
+    Configurando la pantalla LCD, faltaban agregar las funciones en el main
+
+[33mcommit 5abb31745f204438781288ede73fde50166d3d15[m
+Author: robertoacevedomora <roberto.acevedo@ucr.ac.cr>
+Date:   Mon May 29 10:38:11 2023 -0600
+
+    Configurando la pantalla LCD, basandonos en el ejemplo lcd-serial.c
+
+[33mcommit 1416037073ac82511d3610cb6f66aa86c6d7d048[m
+Author: robertoacevedomora <roberto.acevedo@ucr.ac.cr>
+Date:   Sun May 28 23:50:33 2023 -0600
+
+    Configurando el main para leer los ejes
+
+[33mcommit 0454509d1cf2c9f91018767e58b057fb15d03593[m
+Author: robertoacevedomora <roberto.acevedo@ucr.ac.cr>
+Date:   Sun May 28 23:50:11 2023 -0600
+
+    Configurando el main para leer los ejes
+
+[33mcommit 513c799e5f8b52152f7a9ea4aed638faeffe04a9[m
+Author: robertoacevedomora <roberto.acevedo@ucr.ac.cr>
+Date:   Sun May 28 13:54:51 2023 -0600
+
+    Eliminando partes de la funcion spi_setup que no permitian compilar. Se agregaron los archivos necesarios para llevar a cabo el make
+
+[33mcommit d10948d67ba04f392d34e858cc66d04e03ab8487[m
+Author: robertoacevedomora <roberto.acevedo@ucr.ac.cr>
+Date:   Sun May 28 09:15:46 2023 -0600
+
+    Subimos archivos para poder utlizar la consola, lcd-serial
+
+[33mcommit 7e7438e629476adef6dd0bda19e7fc16227b9f9d[m
+Author: robertoacevedomora <roberto.acevedo@ucr.ac.cr>
+Date:   Sun May 28 08:56:42 2023 -0600
+
+    Agrego funcion tomada de los ejemplos (spi-mems) para imprimir los valores en la consola
+
+[33mcommit 6f0f9bfe0a0b1cb6f2cb3df5f9e8d2a5669ce73b[m
+Author: robertoacevedomora <roberto.acevedo@ucr.ac.cr>
+Date:   Sun May 28 08:39:36 2023 -0600
+
+    Terminando detalles de las funciones spi y adc
+
+[33mcommit b678689489a30aee833bf15358c91dec71ea3fbf[m
+Author: robertoacevedomora <roberto.acevedo@ucr.ac.cr>
+Date:   Sat May 27 23:49:11 2023 -0600
+
+    Archivo de los ejemplos para el funcionamiento de la pantalla lcd
+
+[33mcommit 242cf2972d88e747509dd2256dac4229b6d39092[m
+Author: robertoacevedomora <roberto.acevedo@ucr.ac.cr>
+Date:   Sat May 27 23:35:02 2023 -0600
+
+    Agregar archivo para configurar convertidor analogico digital
+
+[33mcommit eadf45a5ab58e85a3ebba1ec3a58b6247a448d7b[m
+Author: robertoacevedomora <roberto.acevedo@ucr.ac.cr>
+Date:   Sat May 27 23:00:25 2023 -0600
+
+    Agregamos los ejes restantes
+
+[33mcommit 406908647f679dfbe2c73b59539e208a71d2bea5[m
+Author: robertoacevedomora <roberto.acevedo@ucr.ac.cr>
+Date:   Sat May 27 22:54:56 2023 -0600
+
+    Implementacion funcion lee eje x, faltan los dos ejes restantes
+
+[33mcommit 3ccebbc51f587805a856f615af2e0eb1b26d9bfd[m
+Author: robertoacevedomora <roberto.acevedo@ucr.ac.cr>
+Date:   Sat May 27 22:24:17 2023 -0600
+
+    Funciones nuevas para la configuracion del giroscopio, falta solucionar la manera en que se lleva a cabo la funcion lectura
+
+[33mcommit 87162b71156067a854378711ef8c9e131a2f7a18[m
+Author: robertoacevedomora <roberto.acevedo@ucr.ac.cr>
+Date:   Sat May 27 22:01:11 2023 -0600
+
+    Modificando archivo spi
+
+[33mcommit d7fc637a835dd979b496032a682bcac1610ddccb[m
+Author: robertoacevedomora <roberto.acevedo@ucr.ac.cr>
+Date:   Sat May 27 20:30:03 2023 -0600
+
+    usart_setup y spi_setup
+
+[33mcommit aa7db9972e88e95883fa7ed8678905deb87af182[m
+Author: robertoacevedomora <roberto.acevedo@ucr.ac.cr>
+Date:   Sat May 27 20:16:23 2023 -0600
+
+    Giroscopio
+
+[33mcommit ce910129eacedb8ba8f3f14f341160dfbb75dcd9[m
+Author: robertoacevedomora <roberto.acevedo@ucr.ac.cr>
+Date:   Sat May 27 14:01:40 2023 -0600
+
+    Configuramos las funciones necesarias para el giroscopio en base al ejemplo spi.c
+
+[33mcommit 79f0ef56dfaa176e0bd03c6d96f806e0b2f28513[m
+Author: robertoacevedomora <roberto.acevedo@ucr.ac.cr>
+Date:   Sat May 27 13:59:17 2023 -0600
+
+    Agregar archivo giro.c y spi.c, tomamos funciones de este ultimo para configurar el giroscopio
+
+[33mcommit 22df96efcda815475bac741fd44f5332b57fd487[m
+Author: robertoacevedomora <roberto.acevedo@ucr.ac.cr>
+Date:   Sat May 27 13:50:48 2023 -0600
+
+    Agregar temporalmente spi.c, de los ejemplos para poder leer los ejes del giroscopio
+
+[33mcommit 8a188bab0f2e05fb71d6081660c27d7b19266347[m
+Author: robertoacevedomora <roberto.acevedo@ucr.ac.cr>
+Date:   Sat May 27 11:24:31 2023 -0600
+
+    Archivo prueba
