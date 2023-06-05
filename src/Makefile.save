@@ -1,0 +1,10 @@
+lCFLAGS = -DTEST
+OBJS = sdram.o clock.o console.o lcd-spi.o gfx.o
+
+BINARY = giro
+
+# we use sin/cos from the library
+LDLIBS += -lm
+
+include ../../Makefile.include
+
